@@ -18,12 +18,9 @@ jobs:
           distribution: 'temurin'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-
       - name: Start SUT
-        run: |
-          java -jar -Dprofile=test ./app-ibank.jar &
-          sleep 10
-
+        # 1. Путь к файлу изменен на artifacts/
+        # 2. Лишняя пауза sleep убрана
+        run: java -jar artifacts/app-api.jar &
       - name: Build with Gradle
         run: ./gradlew test --info
