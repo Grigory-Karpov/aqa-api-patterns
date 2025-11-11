@@ -1,33 +1,60 @@
 import com.github.javafaker.Faker;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import lombok.experimental.UtilityClass;
+
 import java.util.Locale;
 
+import static io.restassured.RestAssured.given;
+
+@UtilityClass
 public class DataGenerator {
 
-    private DataGenerator() {}
+    private static final Faker faker = new Faker(new Locale("ru"));
 
-    public static UserData generateUser() {
-        Faker faker = new Faker(new Locale("ru"));
-        return new UserData(
-                faker.address().city(),
-                faker.name().lastName() + " " + faker.name().firstName(),
-                faker.phoneNumber().phoneNumber()
-        );
-    }
+    private static final RequestSpecification requestSpec = new RequestSpecBuilder()
+            .setBaseUri("http://localhost")
+            .setPort(9999)
+            .setAccept(ContentType.JSON)
+            .setContentType(ContentType.JSON)
+            .log(LogDetail.ALL)
+            .build();
 
-    public static String generateDate(int daysToAdd) {
-        return LocalDate.now().plusDays(daysToAdd).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-    }
 
-    // ВОТ НОВЫЙ МЕТОД, ТЕПЕРЬ ОН ВНУТРИ КЛАССА
-    public static RegistrationDto generateRegistration(String status) {
-        Faker faker = new Faker(new Locale("en"));
-        return new RegistrationDto(
+    public static UserData generateAndRegisterUser(String status) {
+        UserData user = new UserData(
                 faker.name().username(),
                 faker.internet().password(),
                 status
         );
+
+        given()
+                .spec(requestSpec)
+                .body(user)
+        .when()
+                .post("/api/system/users")
+        .then()
+                .statusCode(200);
+
+        return user;
     }
 
+
+    public static UserData generateUserWithInvalidLogin(String status) {
+        String password = faker.internet().password();
+        UserData user = new UserData(
+                "vasya", 
+                password,
+                status
+        );
+        return user;
+    }
+
+ 
+    public static UserData generateUserWithInvalidPassword(String status) {
+        UserData user = generateAndRegisterUser(status);
+        return new UserData(user.getLogin(), faker.internet().password(), user.getStatus());
+    }
 }
