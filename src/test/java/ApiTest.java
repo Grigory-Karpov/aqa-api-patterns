@@ -1,58 +1,69 @@
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 public class ApiTest {
 
-    private static RequestSpecification requestSpec;
-
-    @BeforeAll
-    static void setUp() {
-        requestSpec = new RequestSpecBuilder()
-                .setBaseUri("http://localhost")
-                .setPort(9999)
-                .setAccept(ContentType.JSON)
-                .setContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
-                .build();
+    @BeforeEach
+    void setUp() {
+        given()
+            .baseUri("http://localhost")
+            .port(9999)
+            .contentType("application/json");
     }
 
     @Test
-    void shouldSuccessfullyRegisterActiveUser() {
-        RegistrationDto user = DataGenerator.generateRegistration("active");
+    @DisplayName("Should successfully log in with an active registered user")
+    void shouldLogInActiveUser() {
+        UserData user = DataGenerator.generateAndRegisterUser("active");
         given()
-                .spec(requestSpec)
-                .body(user)
-                .when()
-                .post("/api/system/users")
-                .then()
-                .statusCode(200);
+            .body(user)
+        .when()
+            .post("/api/auth")
+        .then()
+            .statusCode(200)
+            .body("token", org.hamcrest.Matchers.notNullValue());
     }
 
     @Test
-    void shouldFailWithExistingLogin() {
-        RegistrationDto user = DataGenerator.generateRegistration("active");
-
+    @DisplayName("Should show an error for a blocked registered user")
+    void shouldNotLogInBlockedUser() {
+        UserData user = DataGenerator.generateAndRegisterUser("blocked");
         given()
-                .spec(requestSpec)
-                .body(user)
-                .when()
-                .post("/api/system/users")
-                .then()
-                .statusCode(200);
+            .body(user)
+        .when()
+            .post("/api/auth")
+        .then()
+            .statusCode(401)
+            .body("message", equalTo("Пользователь заблокирован"));
+    }
 
-
+    @Test
+    @DisplayName("Should show an error with an invalid login")
+    void shouldNotLogInWithInvalidLogin() {
+        UserData user = DataGenerator.generateUserWithInvalidLogin("active");
         given()
-                .spec(requestSpec)
-                .body(user)
-                .when()
-                .post("/api/system/users")
-                .then()
-                .statusCode(200);
+            .body(user)
+        .when()
+            .post("/api/auth")
+        .then()
+            .statusCode(401)
+            .body("message", equalTo("Неверно указан логин или пароль"));
+    }
+
+    @Test
+    @DisplayName("Should show an error with an invalid password")
+    void shouldNotLogInWithInvalidPassword() {
+        UserData user = DataGenerator.generateUserWithInvalidPassword("active");
+        given()
+            .body(user)
+        .when()
+            .post("/api/auth")
+        .then()
+            .statusCode(401)
+            .body("message", equalTo("Неверно указан логин или пароль"));
     }
 }
