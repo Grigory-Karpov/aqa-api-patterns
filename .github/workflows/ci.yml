@@ -23,9 +23,14 @@ jobs:
         # Запускаем сервер в фоновом режиме
         run: java -jar artifacts/app-ibank.jar &
 
-      # Добавляем паузу в 10 секунд
+      # Ждем, пока порт 9999 не начнет отвечать
       - name: Wait for SUT to start
-        run: sleep 10
+        run: |
+          until nc -z -v -w30 localhost 9999
+          do
+            echo "Waiting for SUT to start..."
+            sleep 1
+          done
 
       - name: Build with Gradle
         run: ./gradlew test --info
