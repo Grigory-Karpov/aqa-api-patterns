@@ -32,7 +32,7 @@ public class DataGenerator {
                 .spec(requestSpec)
                 .body(user)
         .when()
-                .post("/api/system/users")
+                .post("/api/registration")
         .then()
                 .statusCode(200);
         return user;
@@ -41,7 +41,7 @@ public class DataGenerator {
     public static UserData generateUserWithInvalidLogin(String status) {
         String password = faker.internet().password();
         return new UserData(
-                "vasya-invalid", // Заведомо несуществующий логин
+                "vasya-invalid", 
                 password,
                 status
         );
@@ -49,7 +49,6 @@ public class DataGenerator {
 
     public static UserData generateUserWithInvalidPassword(String status) {
         UserData user = generateAndRegisterUser(status);
-        // Возвращаем того же пользователя, но с новым, неверным паролем
         return new UserData(user.getLogin(), faker.internet().password(), user.getStatus());
     }
 }
