@@ -22,14 +22,12 @@ public class DataGenerator {
             .log(LogDetail.ALL)
             .build();
 
-
     public static UserData generateAndRegisterUser(String status) {
         UserData user = new UserData(
                 faker.name().username(),
                 faker.internet().password(),
                 status
         );
-
         given()
                 .spec(requestSpec)
                 .body(user)
@@ -37,24 +35,21 @@ public class DataGenerator {
                 .post("/api/system/users")
         .then()
                 .statusCode(200);
-
         return user;
     }
-
 
     public static UserData generateUserWithInvalidLogin(String status) {
         String password = faker.internet().password();
-        UserData user = new UserData(
-                "vasya", 
+        return new UserData(
+                "vasya-invalid", // Заведомо несуществующий логин
                 password,
                 status
         );
-        return user;
     }
 
- 
     public static UserData generateUserWithInvalidPassword(String status) {
         UserData user = generateAndRegisterUser(status);
+        // Возвращаем того же пользователя, но с новым, неверным паролем
         return new UserData(user.getLogin(), faker.internet().password(), user.getStatus());
     }
 }
