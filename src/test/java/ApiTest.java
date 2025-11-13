@@ -19,7 +19,6 @@ public class ApiTest {
     @Test
     @DisplayName("Should successfully log in with an active registered user")
     void shouldLogInActiveUser() {
-        // Получаем заранее подготовленного активного пользователя
         UserData user = DataGenerator.getRegisteredActiveUser();
 
         given()
@@ -34,7 +33,6 @@ public class ApiTest {
     @Test
     @DisplayName("Should show an error for a blocked registered user")
     void shouldNotLogInBlockedUser() {
-        // Получаем заранее подготовленного заблокированного пользователя
         UserData user = DataGenerator.getRegisteredBlockedUser();
 
         given()
@@ -49,7 +47,6 @@ public class ApiTest {
     @Test
     @DisplayName("Should show an error with an invalid login")
     void shouldNotLogInWithInvalidLogin() {
-        // Получаем пользователя с неверным логином
         UserData user = DataGenerator.getUserWithInvalidLogin();
 
         given()
@@ -64,7 +61,6 @@ public class ApiTest {
     @Test
     @DisplayName("Should show an error with an invalid password")
     void shouldNotLogInWithInvalidPassword() {
-        // Получаем пользователя с верным логином, но неверным паролем
         UserData user = DataGenerator.getUserWithInvalidPassword();
 
         given()
