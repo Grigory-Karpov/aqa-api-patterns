@@ -4,66 +4,75 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class ApiTest {
 
     @BeforeEach
     void setUp() {
         given()
-            .baseUri("http://localhost")
-            .port(9999)
-            .contentType("application/json");
+                .baseUri("http://localhost")
+                .port(9999)
+                .contentType("application/json");
     }
 
     @Test
     @DisplayName("Should successfully log in with an active registered user")
     void shouldLogInActiveUser() {
-        UserData user = DataGenerator.generateAndRegisterUser("active");
+        // Получаем заранее подготовленного активного пользователя
+        UserData user = DataGenerator.getRegisteredActiveUser();
+
         given()
-            .body(user)
+                .body(user)
         .when()
-            .post("/api/auth")
+                .post("/api/auth")
         .then()
-            .statusCode(200)
-            .body("token", org.hamcrest.Matchers.notNullValue());
+                .statusCode(200)
+                .body("token", notNullValue());
     }
 
     @Test
     @DisplayName("Should show an error for a blocked registered user")
     void shouldNotLogInBlockedUser() {
-        UserData user = DataGenerator.generateAndRegisterUser("blocked");
+        // Получаем заранее подготовленного заблокированного пользователя
+        UserData user = DataGenerator.getRegisteredBlockedUser();
+
         given()
-            .body(user)
+                .body(user)
         .when()
-            .post("/api/auth")
+                .post("/api/auth")
         .then()
-            .statusCode(401)
-            .body("message", equalTo("Пользователь заблокирован"));
+                .statusCode(401)
+                .body("message", equalTo("Пользователь заблокирован"));
     }
 
     @Test
     @DisplayName("Should show an error with an invalid login")
     void shouldNotLogInWithInvalidLogin() {
-        UserData user = DataGenerator.generateUserWithInvalidLogin("active");
+        // Получаем пользователя с неверным логином
+        UserData user = DataGenerator.getUserWithInvalidLogin();
+
         given()
-            .body(user)
+                .body(user)
         .when()
-            .post("/api/auth")
+                .post("/api/auth")
         .then()
-            .statusCode(401)
-            .body("message", equalTo("Неверно указан логин или пароль"));
+                .statusCode(401)
+                .body("message", equalTo("Неверно указан логин или пароль"));
     }
 
     @Test
     @DisplayName("Should show an error with an invalid password")
     void shouldNotLogInWithInvalidPassword() {
-        UserData user = DataGenerator.generateUserWithInvalidPassword("active");
+        // Получаем пользователя с верным логином, но неверным паролем
+        UserData user = DataGenerator.getUserWithInvalidPassword();
+
         given()
-            .body(user)
+                .body(user)
         .when()
-            .post("/api/auth")
+                .post("/api/auth")
         .then()
-            .statusCode(401)
-            .body("message", equalTo("Неверно указан логин или пароль"));
+                .statusCode(401)
+                .body("message", equalTo("Неверно указан логин или пароль"));
     }
 }
