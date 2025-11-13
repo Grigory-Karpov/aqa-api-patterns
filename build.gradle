@@ -22,7 +22,7 @@ dependencies {
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
     testImplementation 'com.google.code.gson:gson:2.10.1'
 
-    // Правильное подключение Lombok
+    // Правильное подключение Lombok, которое решает ошибку
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
     testCompileOnly 'org.projectlombok:lombok:1.18.28'
