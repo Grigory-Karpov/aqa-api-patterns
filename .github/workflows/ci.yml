@@ -19,18 +19,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # ШАГ ДЛЯ ОТЛАДКИ: Показываем все файлы, чтобы проверить путь к app-ibank.jar
+      - name: List files in the repository
+        run: ls -R
+
       - name: Start SUT
         # Запускаем сервер в фоновом режиме
         run: java -jar artifacts/app-ibank.jar &
 
-      # Ждем, пока порт 9999 не начнет отвечать
+      # Ждем до 30 секунд, пока порт 9999 не станет доступен
       - name: Wait for SUT to start
         run: |
-          until nc -z -v -w30 localhost 9999
-          do
-            echo "Waiting for SUT to start..."
-            sleep 1
-          done
+          echo "Waiting for SUT to become available..."
+          timeout 30 bash -c 'until nc -z -v -w1 localhost 9999; do sleep 1; done'
+          echo "SUT is available."
 
       - name: Build with Gradle
         run: ./gradlew test --info
