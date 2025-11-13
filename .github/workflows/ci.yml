@@ -20,8 +20,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Start SUT
+        # Запускаем сервер в фоновом режиме
         run: java -jar artifacts/app-ibank.jar &
 
+      # Добавляем паузу в 10 секунд
       - name: Wait for SUT to start
         run: sleep 10
 
