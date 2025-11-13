@@ -49,4 +49,7 @@ public class DataGenerator {
 
     public static UserData generateUserWithInvalidPassword(String status) {
         UserData user = generateAndRegisterUser(status);
+        // Возвращаем того же пользователя, но с новым, неверным паролем
         return new UserData(user.getLogin(), faker.internet().password(), user.getStatus());
+    }
+} 
