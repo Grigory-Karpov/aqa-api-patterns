@@ -29,7 +29,8 @@ public class DataGenerator {
                 .spec(requestSpec)
                 .body(user)
                 .when()
-                .post("/api/system/users")
+                // Вот исправленный путь
+                .post("/api/users")
                 .then()
                 .statusCode(200);
     }
