@@ -1,13 +1,12 @@
 plugins {
     id 'java'
+    id "io.qameta.allure" version "2.11.2"
 }
 
-group = 'ru.netology'
-version = '1.0-SNAPSHOT'
+group 'ru.netology'
+version '1.0-SNAPSHOT'
 
 sourceCompatibility = 11
-
-// Кодировка UTF-8
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
@@ -16,20 +15,17 @@ repositories {
 }
 
 dependencies {
-    // Зависимости для тестов
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    testImplementation 'io.rest-assured:rest-assured:5.3.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'com.codeborne:selenide:6.17.2'
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
+    testImplementation 'io.rest-assured:rest-assured:5.3.0'
     testImplementation 'com.google.code.gson:gson:2.10.1'
-
-    // Правильное подключение Lombok, которое решает ошибку
-    compileOnly 'org.projectlombok:lombok:1.18.28'
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
-    testCompileOnly 'org.projectlombok:lombok:1.18.28'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+    testImplementation 'io.qameta.allure:allure-selenide:2.20.1'
+    testCompileOnly 'org.projectlombok:lombok:1.18.26'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
 
 test {
     useJUnitPlatform()
-    systemProperty 'junit.jupiter.testinstance.lifecycle.default', 'per_class'
+    systemProperty 'selenide.headless', System.getProperty('selenide.headless', 'true')
 }
