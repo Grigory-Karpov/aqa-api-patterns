@@ -14,7 +14,6 @@ public class DataGenerator {
 
     private static final Faker FAKER = new Faker(new Locale("en"));
 
-    // Спецификация для отправки запросов. Единая на весь проект.
     private static final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
@@ -29,8 +28,7 @@ public class DataGenerator {
                 .spec(requestSpec)
                 .body(user)
                 .when()
-                // Вот исправленный путь
-                .post("/api/users")
+                .post("/api/system/users")
                 .then()
                 .statusCode(200);
     }
@@ -43,14 +41,11 @@ public class DataGenerator {
         return FAKER.internet().password();
     }
 
-    // Класс-обертка для удобного вызова
     public static class Registration {
-        // Метод, который просто генерирует данные, но НЕ регистрирует
         public static RegistrationDto getUser(String status) {
             return new RegistrationDto(getRandomLogin(), getRandomPassword(), status);
         }
 
-        // Метод, который И генерирует, И регистрирует пользователя через API
         public static RegistrationDto getRegisteredUser(String status) {
             var registeredUser = getUser(status);
             sendRequest(registeredUser);
