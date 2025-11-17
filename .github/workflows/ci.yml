@@ -19,7 +19,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Start SUT
-        run: java -jar ./artifacts/app-bank.jar &
+        run: java -jar ./artifacts/app-ibank.jar &
       - name: Wait for SUT to start
         run: sleep 30
       - name: Build with Gradle
