@@ -1,10 +1,10 @@
-name: Java CI
+name: Java CI for API Patterns
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 jobs:
   build:
@@ -18,12 +18,9 @@ jobs:
           distribution: 'temurin'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-
-      - name: Start SUT
-        run: |
-          java -jar -Dprofile=test ./app-ibank.jar &
-          sleep 10
-
+      - name: Start SUT in test mode
+        # ЗАПУСКАЕМ СЕРВЕР С ФЛАГОМ ТЕСТОВОГО РЕЖИМА
+        run: java -jar -Dspring.datasource.url=jdbc:mysql://localhost:3306/app ./artifacts/app-bank.jar &
       - name: Build with Gradle
-        run: ./gradlew test --info
+        # ЗАПУСКАЕМ ТЕСТЫ С ФЛАГОM HEADLESS
+        run: ./gradlew test -Dselenide.headless=true --info
